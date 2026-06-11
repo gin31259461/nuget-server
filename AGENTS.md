@@ -1,6 +1,4 @@
-# AGENTS.md
-
-Guidance for coding agents working in this repository.
+# Lightweight NuGet and Symbol Server
 
 ## Project
 
