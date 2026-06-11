@@ -13,7 +13,7 @@ explicitly requires it.
 
 - `Makefile` - cross-platform publish, run, and clean commands.
 - `appsettings.json` - deployment configuration copied to `bin/`.
-- `migrate/setup.sql` - PostgreSQL user/database bootstrap.
+- `migrations/setup.sql` - PostgreSQL user/database bootstrap.
 - `data/` - local package storage, ignored except `.gitkeep`.
 - `bin/` - generated publish output, ignored by git.
 - `BaGetter/src/BaGetter/BaGetter.csproj` - runnable web app project.

@@ -14,7 +14,7 @@ storage.
 
 - `BaGetter/` - BaGetter source checkout.
 - `appsettings.json` - local server configuration.
-- `migrate/setup.sql` - PostgreSQL bootstrap script.
+- `migrations/setup.sql` - PostgreSQL bootstrap script.
 - `data/` - package storage directory.
 - `bin/` - generated publish output, ignored by git.
 
@@ -34,7 +34,7 @@ port, API key, or storage path.
 Create the local PostgreSQL user and database:
 
 ```sh
-psql -U postgres -h localhost -p 5432 -f ./migrate/setup.sql
+psql -U postgres -h localhost -p 5432 -f ./migrations/setup.sql
 ```
 
 BaGetter applies its own application migrations on startup.
