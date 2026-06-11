@@ -1,0 +1,3 @@
+[submodule "BaGetter"]
+	path = BaGetter
+	url = https://github.com/bagetter/BaGetter.git
