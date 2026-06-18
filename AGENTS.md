@@ -1,30 +1,33 @@
 # Lightweight NuGet and Symbol Server
 
-## Project
+## Scope
 
-This repo wraps a BaGetter source checkout as a lightweight private NuGet and
-symbol server. The root project files define local deployment behavior; avoid
-unrelated changes inside the upstream `BaGetter/` source unless the task
-explicitly requires it.
+This repository wraps a BaGetter source checkout as a small private NuGet and
+symbol server. Root files control local deployment. Treat `BaGetter/` as
+vendored upstream code unless the task explicitly requires application changes.
 
-## Important Paths
+## Key Paths
 
-- `Makefile` - cross-platform publish, run, and clean commands.
-- `appsettings.json` - deployment configuration copied to `bin/`.
-- `migrations/setup.sql` - PostgreSQL user/database bootstrap.
-- `data/` - local package storage, ignored except `.gitkeep`.
-- `bin/` - generated publish output, ignored by git.
-- `BaGetter/src/BaGetter/BaGetter.csproj` - runnable web app project.
+- `Makefile`: publish, run, publish-and-run, and clean commands.
+- `appsettings.json`: deployment configuration copied to `bin/`.
+- `migrations/setup.sql`: PostgreSQL user and database bootstrap.
+- `data/`: local package storage; ignored except `.gitkeep`.
+- `bin/`: generated publish output; ignored by git.
+- `BaGetter/src/BaGetter/BaGetter.csproj`: runnable BaGetter web app.
 
 ## Commands
 
-Use these from the repository root:
+Run commands from the repository root.
 
 ```sh
 make publish
+make prun
 make run
 make clean
 ```
+
+`make publish` restores and publishes the BaGetter app, then copies the root
+`appsettings.json` to `bin/appsettings.json`.
 
 Equivalent publish command:
 
@@ -34,28 +37,25 @@ dotnet publish BaGetter/src/BaGetter/BaGetter.csproj \
   --output bin
 ```
 
-After publishing, root `appsettings.json` must exist at `bin/appsettings.json`.
+## Runtime Defaults
 
-## Runtime Assumptions
-
-- Target framework is `net9.0`.
-- Server listens on `http://localhost:8080` by default.
-- PostgreSQL connection defaults to database `nuget`, user `bagetter`.
-- Filesystem package storage defaults to `../data` relative to `bin/`.
-- BaGetter applies application database migrations on startup.
+- Target framework: `net9.0`
+- URL: `http://localhost:8080`
+- Database: PostgreSQL database `nuget`, user `bagetter`
+- Package storage: `../data` relative to `bin/`
+- Database migrations: applied by BaGetter on startup
 
 ## Editing Rules
 
-- Keep root docs and scripts concise and operational.
-- Preserve generated-output ignores for `bin/` and `data/`.
+- Keep root documentation and scripts concise and operational.
+- Preserve ignore behavior for `bin/` and `data/`.
 - Do not commit published binaries, package data, database files, or secrets.
-- Treat `BaGetter/` as vendored upstream source unless asked to modify it.
-- Prefer `make` targets for publish/run/clean verification.
-- Use ASCII in project docs unless there is a clear reason not to.
+- Prefer `make` targets for publish, run, and clean workflows.
+- Use ASCII in project docs unless existing content requires otherwise.
 
 ## Verification
 
-For doc or script changes, run the lightest relevant check:
+For documentation or script changes, run the lightest relevant dry run:
 
 ```sh
 make -n publish
@@ -63,5 +63,5 @@ make -n run
 make -n clean
 ```
 
-For application changes under `BaGetter/`, run the relevant `dotnet test` or
-`dotnet build` command before finishing.
+For application changes under `BaGetter/`, run the relevant `dotnet build` or
+`dotnet test` command before finishing.

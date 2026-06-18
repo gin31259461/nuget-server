@@ -1,8 +1,9 @@
 # Lightweight NuGet and Symbol Server
 
-This repository packages [BaGetter](https://github.com/bagetter/BaGetter) as a
-small private NuGet and symbol server using PostgreSQL and filesystem package
-storage.
+This repository publishes a local
+[BaGetter](https://github.com/bagetter/BaGetter) checkout as a private NuGet
+and symbol server. It uses PostgreSQL for metadata and the local filesystem for
+package storage.
 
 ## Requirements
 
@@ -10,24 +11,38 @@ storage.
 - GNU Make
 - PostgreSQL
 
-## Layout
+## Project Layout
 
 - `BaGetter/` - BaGetter source checkout.
-- `appsettings.json` - local server configuration.
-- `migrations/setup.sql` - PostgreSQL bootstrap script.
-- `data/` - package storage directory.
-- `bin/` - generated publish output, ignored by git.
+- `appsettings.json` - server configuration copied into `bin/` on publish.
+- `migrations/setup.sql` - PostgreSQL user and database bootstrap script.
+- `data/` - local package storage.
+- `bin/` - generated publish output.
 
 ## Configuration
 
-The root `appsettings.json` is copied into `bin/` during publish. It configures:
+The default configuration in `appsettings.json` uses:
 
-- Server URL: `http://localhost:8080`
+- URL: `http://localhost:8080`
 - Database: PostgreSQL database `nuget`, user `bagetter`
-- Package storage: `../data`
+- Package storage: `../data` relative to `bin/`
 
-Update `appsettings.json` before publishing if you need a different database,
-port, API key, or storage path.
+Edit `appsettings.json` before publishing to change the port, database, API key,
+or storage path.
+
+### How to add this source
+
+Windows:
+
+1. edit `$HOME/AppData/Roaming/NuGet/NuGet.Config`
+
+1. add the following package source:
+
+    ```xml
+    <packageSources>
+        <add key="nuget.wke" value="http://<URL>:8080/v3/index.json" allowInsecureConnections="True" />
+    </packageSources>
+    ```
 
 ## Database Setup
 
@@ -37,38 +52,26 @@ Create the local PostgreSQL user and database:
 psql -U postgres -h localhost -p 5432 -f ./migrations/setup.sql
 ```
 
-BaGetter applies its own application migrations on startup.
+BaGetter applies its application migrations when the server starts.
 
 ## Commands
 
-Publish BaGetter into `bin/`:
-
 ```sh
-make publish
+make publish  # publish BaGetter into bin/
+make prun     # publish, then run the server
+make run      # run the published server from bin/
+make clean    # remove generated output
 ```
 
-Publish and run the server:
+The server listens on `http://localhost:8080` by default.
+
+## Restore Existing Packages
+
+After the server is running, push existing packages from `data/packages` back
+into the package index:
 
 ```sh
-make prun
-```
-
-Just run the server:
-
-```sh
-make run
-```
-
-Remove generated output:
-
-```sh
-make clean
-```
-
-## Restore Packages to DB
-
-If you have existing packages in `data/packages`, you can restore them to the database with:
-
-```sh
-dotnet nuget push "data/packages/**/*.nupkg" --source http://localhost:8080/v3/index.json --skip-duplicate
+dotnet nuget push "data/packages/**/*.nupkg" \
+  --source http://localhost:8080/v3/index.json \
+  --skip-duplicate
 ```
