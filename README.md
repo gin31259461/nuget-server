@@ -75,3 +75,15 @@ dotnet nuget push "data/packages/**/*.nupkg" \
   --source http://localhost:8080/v3/index.json \
   --skip-duplicate
 ```
+
+## Register as Windows Service
+
+1. install [servy][]
+
+    ```bash
+    winget install servy
+    ```
+
+2. open servy gui and setup fields
+
+[servy]: https://github.com/aelassas/servy
